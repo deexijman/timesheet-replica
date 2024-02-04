@@ -100,10 +100,10 @@ function App() {
     setSalesRowData(updatedRowData);
   };
 
-  useEffect(()=>{
-    let totalTime = salesTotalHours+bauTotalHours
+  useEffect(() => {
+    let totalTime = salesTotalHours + bauTotalHours
     setTotalHours(totalTime)
-  },[bauTotalHours, salesTotalHours])
+  }, [bauTotalHours, salesTotalHours])
 
   const handleDayOfWeekChange = (event, day, id) => {
     const { value } = event.target;
@@ -123,20 +123,20 @@ function App() {
 
   const handleSalesDayOfWeekChange = (event, day, id) => {
     const { value } = event.target;
-  
+
     // Update the respective row data
     const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
     setSalesRowData(updatedRowData);
-  
+
     // Recalculate total hours
     const updatedTotalHours = updatedRowData.reduce(
       (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
       0
     );
-  
+
     setSalesTotalHours(updatedTotalHours);
   };
-  
+
 
   return (
     <div className="App">
@@ -527,17 +527,9 @@ function App() {
                   </TableRow>
                 ))}
               </TableBody>
-
-
-
             </Table>
           </TableContainer>
         </Grid>
-
-
-
-
-
 
       </Grid>
     </div>
