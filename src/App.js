@@ -1,539 +1,153 @@
-import { useEffect, useState } from 'react';
-import {
-  Typography,
-  Grid,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableContainer,
-  Paper,
-  Button,
-  Select,
-  MenuItem,
-  TextField,
-} from '@mui/material';
+import React, { useState } from "react";
+import PropTypes from "prop-types";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import MenuIcon from "@mui/icons-material/Menu";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Timesheet from "./Component/Timesheet";
 
-const activities = {
-  bau: {
-    bau_001: ["Stakeholder Meeting", "Code Review"],
-    bau_002: ["Daily Standup", "Documentation Review", "Performance Testing", "Bug Fixing"],
-  },
-  sales: {
-    sales_001: ["Client Meeting", "Follow-up Calls", "Presentation Preparation"],
-    sales_002: ["Market Research", "Strategy Planning", "Review Sales Targets", "Client Outreach", "Proposal Drafting"],
-  },
-};
+const drawerWidth = 200;
 
-function App() {
-  const [totalHours, setTotalHours] = useState(0);
-  const [bauTotalHours, setBauTotalHours] = useState(0)
-  const [salesTotalHours, setSalesTotalHours] = useState(0)
+function App({ container, children }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
-  const [bauRowData, setBauRowData] = useState([
-    { id: 1, projectType: '', projectName: '', task: '', comment: '', mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0, sun: 0 },
-  ]);
-  const [salesRowData, setSalesRowData] = useState([
-    { id: 1, projectType: '', projectName: '', task: '', comment: '', mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0, sun: 0 },
-  ]);
-
-  const createBauComponent = () => {
-    var newRow = { id: bauRowData.length + 1, projectType: '', projectName: '', task: '', comment: '', mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0, sun: 0 };
-    var newBuiData = [...bauRowData];
-    newBuiData.push(newRow);
-    setBauRowData(newBuiData);
+  const handleDrawerClose = () => {
+    setIsClosing(true);
+    setMobileOpen(false);
   };
 
-  const createSalesComponent = () => {
-    var newRow = { id: salesRowData.length + 1, projectType: '', projectName: '', task: '', comment: '', mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0, sun: 0 };
-    var newSalesData = [...salesRowData];
-    newSalesData.push(newRow);
-    setSalesRowData(newSalesData);
+  const handleDrawerTransitionEnd = () => {
+    setIsClosing(false);
   };
 
-  const handleSalesProjectTypeChange = (event, id) => {
-    const { value } = event.target;
-
-    // Update the respective row data
-    const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, projectType: value, projectName: '', task: '' } : row));
-    setSalesRowData(updatedRowData);
+  const handleDrawerToggle = () => {
+    if (!isClosing) {
+      setMobileOpen(!mobileOpen);
+    }
   };
 
-  const handleSalesProjectNameChange = (event, id) => {
-    const { value } = event.target;
-
-    // Update the respective row data
-    const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, projectName: value } : row));
-    setSalesRowData(updatedRowData);
-  };
-
-  const handleProjectTypeChange = (event, id) => {
-    const { value } = event.target;
-
-    // Update the respective row data
-    const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, projectType: value, projectName: '', task: '' } : row));
-    setBauRowData(updatedRowData);
-  };
-
-  const handleProjectNameChange = (event, id) => {
-    const { value } = event.target;
-
-    // Update the respective row data
-    const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, projectName: value } : row));
-    setBauRowData(updatedRowData);
-  };
-
-  const handleCommentChange = (event, id) => {
-    const { value } = event.target;
-
-    // Update the respective row data
-    const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, comment: value } : row));
-    setBauRowData(updatedRowData);
-  };
-
-  const handleSalesCommentChange = (event, id) => {
-    const { value } = event.target;
-
-    // Update the respective row data
-    const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, comment: value } : row));
-    setSalesRowData(updatedRowData);
-  };
-
-  useEffect(() => {
-    let totalTime = salesTotalHours + bauTotalHours
-    setTotalHours(totalTime)
-  }, [bauTotalHours, salesTotalHours])
-
-  const handleDayOfWeekChange = (event, day, id) => {
-    const { value } = event.target;
-
-    // Update the respective row data
-    const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
-    setBauRowData(updatedRowData);
-
-    // Recalculate total hours
-    const updatedTotalHours = updatedRowData.reduce(
-      (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
-      0
-    );
-
-    setBauTotalHours(updatedTotalHours);
-  };
-
-  const handleSalesDayOfWeekChange = (event, day, id) => {
-    const { value } = event.target;
-
-    // Update the respective row data
-    const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
-    setSalesRowData(updatedRowData);
-
-    // Recalculate total hours
-    const updatedTotalHours = updatedRowData.reduce(
-      (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
-      0
-    );
-
-    setSalesTotalHours(updatedTotalHours);
-  };
-
-
-  return (
-    <div className="App">
-      <Grid container spacing={2}>
-        {/* Title */}
-        <Grid item xs={12} md={12} lg={12} sx={{ textAlign: "left" }}>
-          <Typography variant="h5" gutterBottom>
-            Timesheet
-          </Typography>
-        </Grid>
-
-        {/* Total Hours */}
-        <Grid item xs={12} md={12} lg={12} sx={{ textAlign: "left" }}>
-          <Typography variant="h5" gutterBottom>
-            Total Hours: {totalHours}
-          </Typography>
-        </Grid>
-
-        {/* Timesheet Table for BAU Activites */}
-        <Grid item xs={12} md={12} lg={12}>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Project Type</TableCell>
-                  <TableCell>Project Name</TableCell>
-                  <TableCell>Task</TableCell>
-                  <TableCell>Comment</TableCell>
-                  <TableCell>Mon</TableCell>
-                  <TableCell>Tue</TableCell>
-                  <TableCell>Wed</TableCell>
-                  <TableCell>Thu</TableCell>
-                  <TableCell>Fri</TableCell>
-                  <TableCell>Sat</TableCell>
-                  <TableCell>Sun</TableCell>
-                  <TableCell>Total</TableCell>
-                  <TableCell></TableCell>
-                </TableRow>
-              </TableHead>
-
-              {/* For Bau Activites */}
-              <TableBody>
-                {bauRowData.map((data, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>
-                      {idx === 0 ? "BauActivity" : ""}
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={data.projectType}
-                        onChange={(e) => handleProjectTypeChange(e, data.id)}
-                      >
-                        <MenuItem value="">Select</MenuItem>
-                        {Object.keys(activities['bau']).map((type, idx) => (
-                          <MenuItem key={idx} value={type}>{type}</MenuItem>
-                        ))}
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={data.projectName}
-                        onChange={(e) => handleProjectNameChange(e, data.id)}
-                      >
-                        <MenuItem value="">Select</MenuItem>
-                        {data.projectType &&
-                          activities['bau'][data.projectType] &&
-                          activities['bau'][data.projectType].map((name, idx) => (
-                            <MenuItem key={idx} value={name}>{name}</MenuItem>
-                          ))}
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.mon > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`comment-${idx}`}
-                        label=""
-                        variant="filled"
-                        value={data.comment}
-                        onChange={(e) => handleCommentChange(e, data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.mon > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`mon-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.mon}
-                        onChange={(e) => handleDayOfWeekChange(e, 'mon', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.mon > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-                        id={`tue-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.tue}
-                        onChange={(e) => handleDayOfWeekChange(e, 'tue', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.wed > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`wed-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.wed}
-                        onChange={(e) => handleDayOfWeekChange(e, 'wed', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.thu > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`thu-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.thu}
-                        onChange={(e) => handleDayOfWeekChange(e, 'thu', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.fri > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`fri-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.fri}
-                        onChange={(e) => handleDayOfWeekChange(e, 'fri', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.sat > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-                        id={`sat-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.sat}
-                        onChange={(e) => handleDayOfWeekChange(e, 'sat', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.sun > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-                        id={`sun-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.sun}
-                        onChange={(e) => handleDayOfWeekChange(e, 'sun', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {data.mon + data.tue + data.wed + data.thu + data.fri + data.sat + data.sun}
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="text" onClick={createBauComponent}>+</Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-
-
-              {/* For Sales Activities */}
-              <TableBody>
-                {salesRowData.map((data, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>
-                      {idx === 0 ? "SalesActivity" : ""}
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={data.projectType}
-                        onChange={(e) => handleSalesProjectTypeChange(e, data.id)}
-                      >
-                        <MenuItem value="">Select</MenuItem>
-                        {Object.keys(activities['sales']).map((type, idx) => (
-                          <MenuItem key={idx} value={type}>{type}</MenuItem>
-                        ))}
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        value={data.projectName}
-                        onChange={(e) => handleSalesProjectNameChange(e, data.id)}
-                      >
-                        <MenuItem value="">Select</MenuItem>
-                        {data.projectType &&
-                          activities['sales'][data.projectType] &&
-                          activities['sales'][data.projectType].map((name, idx) => (
-                            <MenuItem key={idx} value={name}>{name}</MenuItem>
-                          ))}
-                      </Select>
-                    </TableCell>
-
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.mon > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`comment-${idx}`}
-                        label=""
-                        variant="filled"
-                        value={data.comment}
-                        onChange={(e) => handleSalesCommentChange(e, data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.mon > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`mon-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.mon}
-                        onChange={(e) => handleSalesDayOfWeekChange(e, 'mon', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.mon > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-                        id={`tue-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.tue}
-                        onChange={(e) => handleSalesDayOfWeekChange(e, 'tue', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.wed > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`wed-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.wed}
-                        onChange={(e) => handleSalesDayOfWeekChange(e, 'wed', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.thu > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`thu-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.thu}
-                        onChange={(e) => handleSalesDayOfWeekChange(e, 'thu', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.fri > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-
-                        id={`fri-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.fri}
-                        onChange={(e) => handleSalesDayOfWeekChange(e, 'fri', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.sat > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-                        id={`sat-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.sat}
-                        onChange={(e) => handleSalesDayOfWeekChange(e, 'sat', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TextField
-                        sx={{
-                          alignSelf: 'center',
-                          '& input': {
-                            textAlign: 'center',
-                            color: data.sun > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
-                          },
-                        }}
-                        id={`sun-${idx}`}
-                        label=""
-                        type="number"
-                        value={data.sun}
-                        onChange={(e) => handleSalesDayOfWeekChange(e, 'sun', data.id)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {data.mon + data.tue + data.wed + data.thu + data.fri + data.sat + data.sun}
-                    </TableCell>
-                    <TableCell>
-                      <Button variant="text" onClick={createSalesComponent}>+</Button>
-                    </TableCell>
-
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Grid>
-
-      </Grid>
+  const drawer = (
+    <div>
+      <List>
+        <ListItem>
+          <img
+            className="report"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAiCAYAAACqVHINAAAABHNCSVQICAgIfAhkiAAAAjZJREFUSEu1lj1IHFEUhR2wEIloYSGCsChEJAYTAoqCGDAoBCL+BBLSWRqEVBY2Foq9naWVkDpCGlEECy0UTGxcjPiDxSYkFlkhFsL6HXm7mHVn3nV298Jlduedc7+5b97Mm6CixJHJZBKUHCL7yA4yEZSKQfE6ak2Tk/k1SwIB8JTCK2RtoYsuGgKgh8JLYQBBi4IAeEKNz1GAUkCWKdLpu6+xO6GLYYrP+wBFdQJE0/S4bBAANRRftQBidwLkOeaFckNGAUyUG/IBgNIUsVYX0/WO6kpTxIW8pfqYiRD3iaeTEbx6TkwRt5M3VFeaIi7kNdWVpgho/Z9TnnL8Qi4HQfAtyo1nkPEBE0H3BMOvAuKvnJsBdlaoEJ5XnO9/COQoRPyX8xOAtvPHgbzknNIU6mTPo1RHmsZc4Onlj9IUgmx6lGnGPwE6zOrwdPNbO6IpBNH8++InkPE7EG1UXT5TdlwQ7c/VBsMioA3p8LzgoLREWpAplK0G9RmQWQd5xlFpiZQgej3oQ8wSc4Au8LQj1meQJZKCNKD8aFGjWQJyjKeN30pLrN2+VjC959BkcKwD2UWvvd2yv/9Bv5WFNGLS96svdjDtAGlG2OITM76NPp17QTqj1n9UfMe0jzaBSBkVB2hTEvz3FnY3VFcZFkmMSQPkHN2PbJF7r3q3EMJu6jHmEw8k10EoxC2EKjcdWnl34yQCoqnR+FX+NERuWlxxJYZ68pHLlObZdasLuHT5m/PXYXN8A0QF5eZCS3rAAAAAAElFTkSuQmCC"
+          />
+        </ListItem>
+        {[
+          "Inbox",
+          "Starred",
+          "Send email",
+          "Drafts",
+          "All mail",
+          "Trash",
+          "Spam",
+        ].map((text, index) => (
+          <ListItem key={text} disablePadding>
+            <ListItemButton>
+              <ListItemText primary={text} sx={{ color: "white" }} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
     </div>
   );
+
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar
+        position="fixed"
+        sx={{
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          ml: { sm: `${drawerWidth}px` },
+          backgroundColor: "transparent", // Set the background color to white
+          boxShadow: "none", // Optional: Remove box shadow for a cleaner look
+          // zIndex: (theme) => theme.zIndex.drawer + 1, // Ensure it's above the drawer
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="secondary"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { sm: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Box
+        component="nav"
+        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        aria-label="mailbox folders"
+      >
+        <Drawer
+          container={container}
+          variant="temporary"
+          open={mobileOpen}
+          onTransitionEnd={handleDrawerTransitionEnd}
+          onClose={handleDrawerClose}
+          ModalProps={{
+            keepMounted: true,
+          }}
+          sx={{
+            display: "block",
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              background: "linear-gradient(#19105b, #ef5b92)",
+            },
+            
+          }}
+        >
+          {drawer}
+        </Drawer>
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", sm: "block" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              background: "linear-gradient(#19105b, #ef5b92)",
+            },
+          }}
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Box>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+        }}
+      >
+        {/* {children} */}
+        <Timesheet />
+      </Box>
+    </Box>
+  );
 }
+
+App.propTypes = {
+  container: PropTypes.func,
+  children: PropTypes.node,
+};
 
 export default App;
