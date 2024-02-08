@@ -537,7 +537,7 @@ function Timesheet() {
                                                     alignSelf: 'center',
                                                     '& input': {
                                                         textAlign: 'center',
-                                                        color: data.mon > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
+                                                        color: data.tue > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
                                                     },
                                                 }}
                                                 id={`tue-${idx}`}
