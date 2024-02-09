@@ -15,7 +15,20 @@ import {
     TextField,
 } from '@mui/material';
 
-const drawerWidth = 240;
+// imports of utils
+import {
+    createBauComponent,
+    deleteBauComponent
+} from '../utils/bauFunctions'
+
+import {
+    createSalesComponent,
+    deleteSalesComponent,
+
+    salesProjectTypeChange
+} from '../utils/salesFunction'
+
+const drawerWidth = 220;
 
 const activities = {
     bau: {
@@ -36,15 +49,14 @@ function Timesheet() {
     const [salesTotalHours, setSalesTotalHours] = useState(0)
     const [storageTime, setStorageTime] = useState([])
     const [daysOfWeek, setDaysOfWeek] = useState({
-        mon:0,
-        tue:0,
-        wed:0,
-        thu:0,
-        fri:0,
-        sat:0,
-        sun:0,
+        mon: 0,
+        tue: 0,
+        wed: 0,
+        thu: 0,
+        fri: 0,
+        sat: 0,
+        sun: 0,
     })
-
     const [bauRowData, setBauRowData] = useState([
         { id: 1, projectType: '', projectName: '', task: '', comment: '', mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0, sun: 0 },
     ]);
@@ -60,13 +72,13 @@ function Timesheet() {
 
         // To update the daysOfWeek
         var weekDay = {
-            mon:0,
-            tue:0,
-            wed:0,
-            thu:0,
-            fri:0,
-            sat:0,
-            sun:0,
+            mon: 0,
+            tue: 0,
+            wed: 0,
+            thu: 0,
+            fri: 0,
+            sat: 0,
+            sun: 0,
         }
 
         bauRowData.forEach((row) => {
@@ -93,79 +105,48 @@ function Timesheet() {
 
     }, [bauTotalHours, salesTotalHours])
 
-    const createBauComponent = () => {
-        var newRow = { id: bauRowData.length + 1, projectType: '', projectName: '', task: '', comment: '', mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0, sun: 0 };
-        var newBuiData = [...bauRowData];
-        newBuiData.push(newRow);
-        setBauRowData(newBuiData);
-    };
 
-    const deleteBauComponent = (id) =>{
-
-        // Filter out the row with the specified id
-        const updatedBauData = bauRowData.filter(row => row.id !== id);
-        setBauRowData(updatedBauData);
-
-        // Recalculate total hours
-        const updatedTotalHours = updatedBauData.reduce(
-            (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
-            0
-        );
-
-        setBauTotalHours(updatedTotalHours);
+    // BauFunctions ...
+    const handleCreateBauComponent = () => {
+        createBauComponent(bauRowData, setBauRowData);
     }
 
-    const deleteSalesComponent = (id) =>{
-
-        // Filter out the row with the specified id
-        const updatedSalesData = salesRowData.filter(row => row.id !== id);
-        setSalesRowData(updatedSalesData)
-
-        // Recalculate total hours
-        const updatedTotalHours = updatedSalesData.reduce(
-            (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
-            0
-        );
-
-        setSalesTotalHours(updatedTotalHours);
-
+    const handleDeleteBauComponent = (id) => {
+        deleteBauComponent(id, bauRowData, setBauRowData, setBauTotalHours)
     }
 
-    const createSalesComponent = () => {
-        var newRow = { id: salesRowData.length + 1, projectType: '', projectName: '', task: '', comment: '', mon: 0, tue: 0, wed: 0, thu: 0, fri: 0, sat: 0, sun: 0 };
-        var newSalesData = [...salesRowData];
-        newSalesData.push(newRow);
-        setSalesRowData(newSalesData);
-    };
+    // SalesFunctions ...
+    const handleCreateSalesComponent = () => {
+        createSalesComponent(salesRowData, setSalesRowData)
+    }
 
+    const handleDeleteSalesComponent = (id) => {
+        deleteSalesComponent(id, salesRowData, setSalesRowData, setSalesTotalHours)
+    }
+
+    // Dropdown functionality for Sales ...
     const handleSalesProjectTypeChange = (event, id) => {
-        const { value } = event.target;
-
-        // Update the respective row data
-        const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, projectType: value, projectName: '', task: '' } : row));
-        setSalesRowData(updatedRowData);
+        salesProjectTypeChange(event, id, salesRowData, setSalesRowData)
     };
 
     const handleSalesProjectNameChange = (event, id) => {
         const { value } = event.target;
 
-        // Update the respective row data
         const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, projectName: value } : row));
         setSalesRowData(updatedRowData);
     };
 
-    const handleProjectTypeChange = (event, id) => {
+    // Dropdown functionality for BAU ...
+    const handleBauProjectTypeChange = (event, id) => {
         const { value } = event.target;
 
-        // Update the respective row data
         const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, projectType: value, projectName: '', task: '' } : row));
         setBauRowData(updatedRowData);
     };
 
-    const handleProjectNameChange = (event, id) => {
+    const handleBauProjectNameChange = (event, id) => {
         const { value } = event.target;
 
-        // Update the respective row data
         const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, projectName: value } : row));
         setBauRowData(updatedRowData);
     };
@@ -173,7 +154,6 @@ function Timesheet() {
     const handleCommentChange = (event, id) => {
         const { value } = event.target;
 
-        // Update the respective row data
         const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, comment: value } : row));
         setBauRowData(updatedRowData);
     };
@@ -181,43 +161,47 @@ function Timesheet() {
     const handleSalesCommentChange = (event, id) => {
         const { value } = event.target;
 
-        // Update the respective row data
         const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, comment: value } : row));
         setSalesRowData(updatedRowData);
     };
 
-    
+    const handleBauDayOfWeekChange = (event, day, id) => {
 
-    const handleDayOfWeekChange = (event, day, id) => {
         const { value } = event.target;
 
-        // Update the respective row data
-        const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
-        setBauRowData(updatedRowData);
+        if (value <= 24 && value >= 0) {
+            // Update the respective row data
+            const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
+            setBauRowData(updatedRowData);
 
-        // Recalculate total hours
-        const updatedTotalHours = updatedRowData.reduce(
-            (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
-            0
-        );
+            // Recalculate total hours
+            const updatedTotalHours = updatedRowData.reduce(
+                (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
+                0
+            );
 
-        setBauTotalHours(updatedTotalHours);
+            setBauTotalHours(updatedTotalHours);
+        }
+
     };
 
     const handleSalesDayOfWeekChange = (event, day, id) => {
         const { value } = event.target;
 
-        // Update the respective row data
-        const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
-        setSalesRowData(updatedRowData);
+        if (value <= 24 && value >= 0) {
+            // Update the respective row data
+            const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
+            setSalesRowData(updatedRowData);
 
-        // Recalculate total hours
-        const updatedTotalHours = updatedRowData.reduce(
-            (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
-            0
-        );
+            // Recalculate total hours
+            const updatedTotalHours = updatedRowData.reduce(
+                (total, row) => total + row.mon + row.tue + row.wed + row.thu + row.fri + row.sat + row.sun,
+                0
+            );
 
-        setSalesTotalHours(updatedTotalHours);
+            setSalesTotalHours(updatedTotalHours);
+        }
+
     };
 
 
@@ -288,7 +272,7 @@ function Timesheet() {
                                         <TableCell>
                                             <Select
                                                 value={data.projectType}
-                                                onChange={(e) => handleProjectTypeChange(e, data.id)}
+                                                onChange={(e) => handleBauProjectTypeChange(e, data.id)}
                                             >
                                                 <MenuItem value="">Select</MenuItem>
                                                 {Object.keys(activities['bau']).map((type, idx) => (
@@ -299,7 +283,7 @@ function Timesheet() {
                                         <TableCell>
                                             <Select
                                                 value={data.projectName}
-                                                onChange={(e) => handleProjectNameChange(e, data.id)}
+                                                onChange={(e) => handleBauProjectNameChange(e, data.id)}
                                             >
                                                 <MenuItem value="">Select</MenuItem>
                                                 {data.projectType &&
@@ -341,7 +325,7 @@ function Timesheet() {
                                                 label=""
                                                 type="number"
                                                 value={data.mon}
-                                                onChange={(e) => handleDayOfWeekChange(e, 'mon', data.id)}
+                                                onChange={(e) => handleBauDayOfWeekChange(e, 'mon', data.id)}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -350,15 +334,15 @@ function Timesheet() {
                                                     alignSelf: 'center',
                                                     '& input': {
                                                         textAlign: 'center',
-                                                        color: data.mon > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
+                                                        color: data.tue > 8 ? 'red' : 'inherit', // Turns red if the value exceeds 8
                                                     },
-                                                    width: '70px'
+                                                    width: '60px',
                                                 }}
                                                 id={`tue-${idx}`}
                                                 label=""
                                                 type="number"
                                                 value={data.tue}
-                                                onChange={(e) => handleDayOfWeekChange(e, 'tue', data.id)}
+                                                onChange={(e) => handleBauDayOfWeekChange(e, 'tue', data.id)}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -376,7 +360,7 @@ function Timesheet() {
                                                 label=""
                                                 type="number"
                                                 value={data.wed}
-                                                onChange={(e) => handleDayOfWeekChange(e, 'wed', data.id)}
+                                                onChange={(e) => handleBauDayOfWeekChange(e, 'wed', data.id)}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -394,7 +378,7 @@ function Timesheet() {
                                                 label=""
                                                 type="number"
                                                 value={data.thu}
-                                                onChange={(e) => handleDayOfWeekChange(e, 'thu', data.id)}
+                                                onChange={(e) => handleBauDayOfWeekChange(e, 'thu', data.id)}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -412,7 +396,7 @@ function Timesheet() {
                                                 label=""
                                                 type="number"
                                                 value={data.fri}
-                                                onChange={(e) => handleDayOfWeekChange(e, 'fri', data.id)}
+                                                onChange={(e) => handleBauDayOfWeekChange(e, 'fri', data.id)}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -431,7 +415,7 @@ function Timesheet() {
                                                 label=""
                                                 type="number"
                                                 value={data.sat}
-                                                onChange={(e) => handleDayOfWeekChange(e, 'sat', data.id)}
+                                                onChange={(e) => handleBauDayOfWeekChange(e, 'sat', data.id)}
                                             />
                                         </TableCell>
                                         <TableCell>
@@ -448,17 +432,23 @@ function Timesheet() {
                                                 id={`sun-${idx}`}
                                                 type="number"
                                                 value={data.sun}
-                                                onChange={(e) => handleDayOfWeekChange(e, 'sun', data.id)}
+                                                onChange={(e) => handleBauDayOfWeekChange(e, 'sun', data.id)}
                                             />
                                         </TableCell>
                                         <TableCell>
                                             {data.mon + data.tue + data.wed + data.thu + data.fri + data.sat + data.sun}
                                         </TableCell>
                                         <TableCell>
-                                            <Button variant="text" onClick={createBauComponent}>+</Button>
+                                            <Button variant="text" color="inherit" size="large" onClick={handleCreateBauComponent}>+</Button>
                                         </TableCell>
                                         <TableCell>
-                                            <Button variant="text" onClick={() => deleteBauComponent(data.id)}>{idx===0 ? "" : "-" }</Button>
+                                            {
+                                                idx === 0
+                                                    ?
+                                                    ""
+                                                    :
+                                                    <Button variant="text" color="inherit" size="large" onClick={() => handleDeleteBauComponent(data.id)}>-</Button>
+                                            }
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -634,10 +624,16 @@ function Timesheet() {
                                             {data.mon + data.tue + data.wed + data.thu + data.fri + data.sat + data.sun}
                                         </TableCell>
                                         <TableCell>
-                                            <Button variant="text" onClick={createSalesComponent}>+</Button>
+                                            <Button variant="text" color="inherit" size="large" onClick={handleCreateSalesComponent}>+</Button>
                                         </TableCell>
                                         <TableCell>
-                                            <Button variant="text" onClick={() => deleteSalesComponent(data.id)}>{idx===0 ? "" : "-" }</Button>
+                                            {
+                                                idx === 0
+                                                    ?
+                                                    ""
+                                                    :
+                                                    <Button variant="text" color="inherit" size="large" onClick={() => handleDeleteSalesComponent(data.id)}>-</Button>
+                                            }
                                         </TableCell>
 
                                     </TableRow>
@@ -657,11 +653,11 @@ function Timesheet() {
 
                                     {/* Store Time / day in a week */}
                                     {
-                                        Object.keys(daysOfWeek).map((task, idx)=>(
+                                        Object.keys(daysOfWeek).map((task, idx) => (
                                             <TableCell sx={{ textAlign: "center" }} key={idx}>{daysOfWeek[task]}</TableCell>
                                         ))
                                     }
-                                    
+
                                     <TableCell></TableCell>
                                     <TableCell></TableCell>
                                     <TableCell></TableCell>
@@ -706,25 +702,25 @@ function Timesheet() {
                         <div></div>
 
                         <div>
-                            <Button 
+                            <Button
                                 style={{ color: 'white', backgroundColor: '#19105b', marginRight: '5px', padding: '5px' }}
-                            onClick={()=>{
-                                var temp = [...storageTime]
-                                temp.push(Date.now().toString())
-                                setStorageTime(temp)
-                                localStorage.setItem(Date.now().toString(), [...bauRowData,...salesRowData].toString());
-                                alert('Saved Data')
-                            }}>save</Button>
-                            <Button 
+                                onClick={() => {
+                                    var temp = [...storageTime]
+                                    temp.push(Date.now().toString())
+                                    setStorageTime(temp)
+                                    localStorage.setItem(Date.now().toString(), [...bauRowData, ...salesRowData].toString());
+                                    alert('Saved Data')
+                                }}>save</Button>
+                            <Button
                                 style={{ color: 'white', backgroundColor: '#ef5b92', marginLeft: '5px', padding: '5px' }}
-                                onClick={()=>{
-                                    storageTime.forEach((date,idx)=>{
+                                onClick={() => {
+                                    storageTime.forEach((date, idx) => {
                                         let data = localStorage.getItem(date.toString());
-                                        console.log("This is at ",idx," stores : ",Object.keys(data)," values ",Object.values(data));
+                                        console.log("This is at ", idx, " stores : ", Object.keys(data), " values ", Object.values(data));
                                     })
                                     alert('Logged all data in the console')
                                 }}
-                             >submit</Button>
+                            >submit</Button>
                         </div>
 
                     </div>

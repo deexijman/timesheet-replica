@@ -13,7 +13,7 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Timesheet from "./Component/Timesheet";
+import Timesheet from "./Components/Timesheet";
 
 const drawerWidth = 200;
 
@@ -72,9 +72,8 @@ function App({ container, children }) {
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          backgroundColor: "transparent", // Set the background color to white
-          boxShadow: "none", // Optional: Remove box shadow for a cleaner look
-          // zIndex: (theme) => theme.zIndex.drawer + 1, // Ensure it's above the drawer
+          backgroundColor: "transparent", 
+          boxShadow: "none"
         }}
       >
         <Toolbar>
@@ -138,7 +137,7 @@ function App({ container, children }) {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        {/* {children} */}
+        {/* Emebedded Timesheet as a child here */}
         <Timesheet />
       </Box>
     </Box>
