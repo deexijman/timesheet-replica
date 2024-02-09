@@ -25,7 +25,8 @@ import {
     createSalesComponent,
     deleteSalesComponent,
 
-    salesProjectTypeChange
+    salesProjectTypeChange,
+    salesProjectNameChange
 } from '../utils/salesFunction'
 
 const drawerWidth = 220;
@@ -130,10 +131,7 @@ function Timesheet() {
     };
 
     const handleSalesProjectNameChange = (event, id) => {
-        const { value } = event.target;
-
-        const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, projectName: value } : row));
-        setSalesRowData(updatedRowData);
+        salesProjectNameChange(event, id, salesRowData, setSalesRowData)
     };
 
     // Dropdown functionality for BAU ...
@@ -169,7 +167,7 @@ function Timesheet() {
 
         const { value } = event.target;
 
-        if (value <= 24 && value >= 0) {
+        if (value <= 24 && value.toString().length<3 && value >= 0) {
             // Update the respective row data
             const updatedRowData = bauRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
             setBauRowData(updatedRowData);
@@ -188,7 +186,7 @@ function Timesheet() {
     const handleSalesDayOfWeekChange = (event, day, id) => {
         const { value } = event.target;
 
-        if (value <= 24 && value >= 0) {
+        if (value <= 24 && value.toString().length<3 && value >= 0) {
             // Update the respective row data
             const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, [day]: parseInt(value, 10) || 0 } : row));
             setSalesRowData(updatedRowData);

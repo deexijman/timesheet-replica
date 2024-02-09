@@ -37,10 +37,10 @@ const deleteSalesComponent = (id, salesRowData, setSalesRowData, setSalesTotalHo
 
 /**
  * Function to delete specific Sales component.
- * @param {event} event - id of the specific component
+ * @param {event} event - change event
+ * @param {id} id - id of the specific component
  * @param {Array} salesRowData - The current array of Sales row data. 
  * @param {function} setSalesRowData - The state setter function for updating the Sales row data.
- * @param {function} setSalesTotalHours - The state setter function for updating the Sales row data.
  */
 const salesProjectTypeChange = (event, id, salesRowData, setSalesRowData) =>{
     const { value } = event.target;
@@ -50,4 +50,19 @@ const salesProjectTypeChange = (event, id, salesRowData, setSalesRowData) =>{
 }
 
 
-export { deleteSalesComponent, createSalesComponent, salesProjectTypeChange }
+/**
+ * Function to delete specific Sales component.
+ * @param {event} event - id of the specific component
+ * @param {id} id - id of the specific component
+ * @param {Array} salesRowData - The current array of Sales row data. 
+ * @param {function} setSalesRowData - The state setter function for updating the Sales row data.
+ */
+const salesProjectNameChange = (event, id, salesRowData, setSalesRowData) =>{
+    const { value } = event.target;
+
+    const updatedRowData = salesRowData.map(row => (row.id === id ? { ...row, projectName: value } : row));
+    setSalesRowData(updatedRowData);
+}
+
+
+export { deleteSalesComponent, createSalesComponent, salesProjectTypeChange, salesProjectNameChange }
